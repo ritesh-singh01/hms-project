@@ -14,23 +14,51 @@ document.addEventListener('DOMContentLoaded', () => {
   const submitBtn = document.getElementById('submitBtn');
   const passwordInput = document.getElementById('password');
   const logoutBtn = document.getElementById('logoutBtn');
+  const welcomeText = document.getElementById('welcomeText');
   const roomStatusEl = document.getElementById('roomStatus');
   const roomForm = document.getElementById('roomForm');
   const roomsTableBody = document.getElementById('roomsTableBody');
 
   if (
-    !statusEl || !studentsTableBody || !studentForm || !formTitle || !submitBtn || !passwordInput || !logoutBtn ||
+    !statusEl || !studentsTableBody || !studentForm || !formTitle || !submitBtn || !passwordInput || !logoutBtn || !welcomeText ||
     !roomStatusEl || !roomForm || !roomsTableBody
   ) {
     return;
   }
 
+  function parseToken(tokenValue) {
+    try {
+      const payload = JSON.parse(atob(tokenValue.split('.')[1]));
+      return payload;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function updateWelcomeText() {
+    const payload = parseToken(token);
+    if (!payload) {
+      welcomeText.innerText = 'Welcome User';
+      return;
+    }
+
+    const roleMap = {
+      1: 'Admin',
+      2: 'Student',
+      3: 'User'
+    };
+
+    const roleLabel = roleMap[Number(payload.role)] || 'User';
+    const name = payload.name || roleLabel;
+    welcomeText.innerText = `Welcome ${name}`;
+  }
+
   function showMessage(message) {
-    statusEl.innerText = message || '';
+    statusEl.innerText = message || ' ';
   }
 
   function showRoomMessage(message) {
-    roomStatusEl.innerText = message || '';
+    roomStatusEl.innerText = message || ' ';
   }
 
   function logout() {
@@ -102,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>${student.roll_no || ''}</td>
           <td>${student.department || ''}</td>
           <td>${student.year || ''}</td>
-          <td>${student.room_number || '-'}</td>
+          <td>${student.room_number || 'Not Assigned'}</td>
           <td></td>
         `;
 
@@ -124,7 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
         studentsTableBody.appendChild(row);
       });
     } catch (error) {
-      console.error(error);
       showMessage('Server error while loading students');
     }
   }
@@ -199,7 +226,6 @@ document.addEventListener('DOMContentLoaded', () => {
       await loadStudents();
       await loadRooms();
     } catch (err) {
-      console.error(err);
       showMessage('Server error');
     }
   }
@@ -232,7 +258,6 @@ document.addEventListener('DOMContentLoaded', () => {
       await loadStudents();
       await loadRooms();
     } catch (err) {
-      console.error(err);
       showMessage('Server error while deleting');
     }
   }
@@ -284,7 +309,14 @@ document.addEventListener('DOMContentLoaded', () => {
         assignBtn.type = 'button';
         assignBtn.className = 'edit-btn';
         assignBtn.innerText = 'Assign Student';
-        assignBtn.addEventListener('click', () => assignRoom(room.id));
+        const isRoomFull = Number(room.occupied) >= Number(room.capacity);
+        if (isRoomFull) {
+          assignBtn.disabled = true;
+          assignBtn.innerText = 'Room Full';
+          assignBtn.title = 'Room is full';
+        } else {
+          assignBtn.addEventListener('click', () => assignRoom(room.id, room));
+        }
 
         const deleteBtn = document.createElement('button');
         deleteBtn.type = 'button';
@@ -297,7 +329,6 @@ document.addEventListener('DOMContentLoaded', () => {
         roomsTableBody.appendChild(row);
       });
     } catch (err) {
-      console.error(err);
       showRoomMessage('Server error while loading rooms');
     }
   }
@@ -339,7 +370,6 @@ document.addEventListener('DOMContentLoaded', () => {
       roomForm.reset();
       await loadRooms();
     } catch (err) {
-      console.error(err);
       showRoomMessage('Server error while adding room');
     }
   }
@@ -369,12 +399,16 @@ document.addEventListener('DOMContentLoaded', () => {
       showRoomMessage(data.message || 'Room deleted successfully');
       await loadRooms();
     } catch (err) {
-      console.error(err);
       showRoomMessage('Server error while deleting room');
     }
   }
 
-  async function assignRoom(roomId) {
+  async function assignRoom(roomId, roomData) {
+    if (roomData && Number(roomData.occupied) >= Number(roomData.capacity)) {
+      showRoomMessage('Room is full');
+      return;
+    }
+
     const studentInput = window.prompt('Enter Student ID to assign this room:');
     if (!studentInput) return;
 
@@ -413,7 +447,6 @@ document.addEventListener('DOMContentLoaded', () => {
       await loadRooms();
       await loadStudents();
     } catch (err) {
-      console.error(err);
       showRoomMessage('Server error while assigning room');
     }
   }
@@ -429,6 +462,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   logoutBtn.addEventListener('click', logout);
+  updateWelcomeText();
   loadStudents();
   loadRooms();
 });

@@ -1,6 +1,3 @@
-// Run after page loads
-console.log("JS loaded");
-console.log(document.getElementById("loginForm"));
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("loginForm");
 
@@ -45,7 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
     } catch (err) {
-      console.error(err);
       errorEl.innerText = "Server error";
     }
   });
