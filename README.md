@@ -15,4 +15,4 @@
 ## How to run
 1. npm install
 2. add .env file
-3. npm start
+3. npm start.
