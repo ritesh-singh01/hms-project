@@ -8,5 +8,6 @@ router.post('/', authMiddleware, roomController.addRoom);
 router.get('/', authMiddleware, roomController.getAllRooms);
 router.delete('/:id', authMiddleware, roomController.deleteRoom);
 router.post('/assign', authMiddleware, roomController.assignStudentToRoom);
+router.post('/remove-assignment', authMiddleware, roomController.removeStudentFromRoom);
 
 module.exports = router;

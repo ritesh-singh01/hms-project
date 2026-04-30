@@ -100,6 +100,12 @@ exports.assignStudentToRoom = async (req, res) => {
       return res.status(404).json({ message: 'Student not found' });
     }
 
+    const currentRoomId = studentRows[0].room_id;
+    if (currentRoomId) {
+      await conn.rollback();
+      return res.status(400).json({ message: 'Student is already assigned to a room. Remove first.' });
+    }
+
     const [targetRoomRows] = await conn.query(
       'SELECT id, capacity, occupied FROM rooms WHERE id = ? LIMIT 1 FOR UPDATE',
       [room_id]
@@ -115,32 +121,73 @@ exports.assignStudentToRoom = async (req, res) => {
       return res.status(400).json({ message: 'Room is full' });
     }
 
-    const currentRoomId = studentRows[0].room_id;
-
-    if (currentRoomId && Number(currentRoomId) !== Number(room_id)) {
-      await conn.query(
-        'UPDATE rooms SET occupied = CASE WHEN occupied > 0 THEN occupied - 1 ELSE 0 END WHERE id = ?',
-        [currentRoomId]
-      );
-    }
-
     await conn.query(
       'UPDATE student_details SET room_id = ? WHERE user_id = ?',
       [room_id, student_id]
     );
 
-    if (!currentRoomId || Number(currentRoomId) !== Number(room_id)) {
-      await conn.query(
-        'UPDATE rooms SET occupied = occupied + 1 WHERE id = ?',
-        [room_id]
-      );
-    }
+    await conn.query(
+      'UPDATE rooms SET occupied = occupied + 1 WHERE id = ?',
+      [room_id]
+    );
 
     await conn.commit();
     return res.json({ message: 'Room assigned successfully' });
   } catch (err) {
     if (conn) await conn.rollback();
     return res.status(500).json({ message: err.message || 'Server error while assigning room' });
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
+exports.removeStudentFromRoom = async (req, res) => {
+  const { student_id } = req.body;
+
+  if (Number(req.user.role) !== 1) {
+    return res.status(403).json({ message: 'Only admin can remove room assignment' });
+  }
+
+  if (!student_id) {
+    return res.status(400).json({ message: 'student_id is required' });
+  }
+
+  let conn;
+  try {
+    conn = await db.getConnection();
+    await conn.beginTransaction();
+
+    const [studentRows] = await conn.query(
+      'SELECT user_id, room_id FROM student_details WHERE user_id = ? LIMIT 1',
+      [student_id]
+    );
+
+    if (studentRows.length === 0) {
+      await conn.rollback();
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    const currentRoomId = studentRows[0].room_id;
+    if (!currentRoomId) {
+      await conn.rollback();
+      return res.status(400).json({ message: 'Student is not assigned to any room' });
+    }
+
+    await conn.query(
+      'UPDATE student_details SET room_id = NULL WHERE user_id = ?',
+      [student_id]
+    );
+
+    await conn.query(
+      'UPDATE rooms SET occupied = CASE WHEN occupied > 0 THEN occupied - 1 ELSE 0 END WHERE id = ?',
+      [currentRoomId]
+    );
+
+    await conn.commit();
+    return res.json({ message: 'Student removed from room successfully' });
+  } catch (err) {
+    if (conn) await conn.rollback();
+    return res.status(500).json({ message: err.message || 'Server error while removing room assignment' });
   } finally {
     if (conn) conn.release();
   }

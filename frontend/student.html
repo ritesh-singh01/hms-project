@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <h2 class="sidebar-title">HMS Student</h2>
+      <nav class="sidebar-nav">
+        <a href="#noticesSection" class="nav-link">Notices</a>
+        <a href="#messSection" class="nav-link">Mess Timetable</a>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="container">
+        <div class="header">
+          <h1>Student Dashboard</h1>
+          <div class="header-actions">
+            <span id="welcomeStudentText" class="welcome-text">Welcome Student</span>
+            <button class="logout-btn" id="studentLogoutBtn">Logout</button>
+          </div>
+        </div>
+
+        <section id="noticesSection">
+          <h3 class="section-title">Notices</h3>
+          <p id="studentNoticeStatus"></p>
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Content</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody id="studentNoticesTableBody"></tbody>
+          </table>
+        </section>
+
+        <section id="messSection">
+          <h3 class="section-title">Mess Timetable</h3>
+          <p id="studentMessStatus"></p>
+          <table>
+            <thead>
+              <tr>
+                <th>Day</th>
+                <th>Breakfast</th>
+                <th>Lunch</th>
+                <th>Dinner</th>
+              </tr>
+            </thead>
+            <tbody id="studentMessTableBody"></tbody>
+          </table>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="student.js"></script>
+</body>
+</html>

@@ -5,69 +5,209 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>Dashboard</h1>
-      <div class="header-actions">
-        <span id="welcomeText" class="welcome-text">Welcome User</span>
-        <button class="logout-btn" id="logoutBtn">Logout</button>
+
+  <div class="admin-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <h2 class="sidebar-title">HMS Admin</h2>
+      <nav class="sidebar-nav">
+        <a href="#studentsSection" class="nav-link">Students</a>
+        <a href="#roomsSection" class="nav-link">Rooms</a>
+        <a href="#noticesSection" class="nav-link">Notices</a>
+        <a href="#messSection" class="nav-link">Mess Timetable</a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+      <div class="container">
+
+        <!-- HEADER -->
+        <div class="header">
+          <h1>Admin Panel</h1>
+          <div class="header-actions">
+            <span id="welcomeText" class="welcome-text">Welcome Admin</span>
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+          </div>
+        </div>
+
+        <!-- STATS -->
+        <section class="stats-grid">
+          <div class="stat-card">
+            <p class="stat-title">Total Students</p>
+            <h3 id="totalStudents">0</h3>
+          </div>
+          <div class="stat-card">
+            <p class="stat-title">Total Rooms</p>
+            <h3 id="totalRooms">0</h3>
+          </div>
+          <div class="stat-card">
+            <p class="stat-title">Occupied Rooms</p>
+            <h3 id="occupiedRooms">0</h3>
+          </div>
+        </section>
+
+        <!-- STUDENTS -->
+        <section id="studentsSection">
+
+          <h3 id="formTitle">Add Student</h3>
+
+          <form id="studentForm">
+            <div class="form-grid">
+              <input id="name" placeholder="Name">
+              <input id="email" placeholder="Email">
+              <input id="password" type="password" placeholder="Password">
+              <input id="roll" placeholder="Roll No">
+              <input id="dept" placeholder="Department">
+              <input id="year" type="number" min="1" max="4" placeholder="Year">
+            </div>
+            <button type="submit" id="submitBtn" class="add-btn">Add Student</button>
+          </form>
+
+          <h3 class="section-title">Students</h3>
+
+          <!-- FILTER -->
+          <div class="filter-row">
+            <input id="searchStudent" placeholder="Search by name or email">
+            <select id="filterDepartment">
+              <option value="">All Departments</option>
+            </select>
+            <select id="filterYear">
+              <option value="">All Years</option>
+              <option value="1">Year 1</option>
+              <option value="2">Year 2</option>
+              <option value="3">Year 3</option>
+              <option value="4">Year 4</option>
+            </select>
+          </div>
+
+          <p id="status"></p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Roll No</th>
+                <th>Department</th>
+                <th>Year</th>
+                <th>Room</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <!-- IMPORTANT: JS WILL FILL CLEAN BUTTON STRUCTURE -->
+            <tbody id="studentsTableBody"></tbody>
+
+          </table>
+        </section>
+
+        <!-- ROOMS -->
+        <section id="roomsSection">
+
+          <h3 class="section-title">Room Management</h3>
+
+          <form id="roomForm">
+            <div class="form-grid">
+              <input id="roomNumber" placeholder="Room Number">
+              <input id="roomCapacity" type="number" min="1" placeholder="Capacity">
+            </div>
+            <button type="submit" class="add-btn">Add Room</button>
+          </form>
+
+          <p id="roomStatus"></p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Room Number</th>
+                <th>Occupancy</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="roomsTableBody"></tbody>
+          </table>
+
+        </section>
+
+        <!-- NOTICES -->
+        <section id="noticesSection">
+
+          <h3 class="section-title">Notices Management</h3>
+
+          <form id="noticeForm">
+            <div class="form-grid">
+              <input id="noticeTitle" placeholder="Notice title">
+              <input id="noticeContent" placeholder="Notice content">
+            </div>
+            <button type="submit" class="add-btn">Add Notice</button>
+          </form>
+
+          <p id="noticeStatus"></p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Content</th>
+                <th>Created</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="noticesTableBody"></tbody>
+          </table>
+
+        </section>
+
+        <!-- MESS -->
+        <section id="messSection">
+
+          <h3 class="section-title">Mess Timetable Management</h3>
+
+          <form id="messForm">
+            <div class="form-grid">
+              <select id="messDay">
+                <option value="">Select day</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+              </select>
+              <input id="messBreakfast" placeholder="Breakfast">
+              <input id="messLunch" placeholder="Lunch">
+              <input id="messDinner" placeholder="Dinner">
+            </div>
+            <button type="submit" class="add-btn">Add / Update Timetable</button>
+          </form>
+
+          <p id="messStatus"></p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Day</th>
+                <th>Breakfast</th>
+                <th>Lunch</th>
+                <th>Dinner</th>
+              </tr>
+            </thead>
+            <tbody id="messTableBody"></tbody>
+          </table>
+
+        </section>
+
       </div>
-    </div>
 
-    <h3 id="formTitle">Add Student</h3>
-    <form id="studentForm">
-      <div class="form-grid">
-        <input id="name" placeholder="Name">
-        <input id="email" placeholder="Email">
-        <input id="password" type="password" placeholder="Password">
-        <input id="roll" placeholder="Roll No">
-        <input id="dept" placeholder="Department">
-        <input id="year" type="number" min="1" max="4" placeholder="Year">
-      </div>
-      <button type="submit" id="submitBtn" class="add-btn">Add Student</button>
-    </form>
+    </main>
 
-    <h3 class="section-title">Students</h3>
-    <p id="status"></p>
-
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Roll No</th>
-          <th>Department</th>
-          <th>Year</th>
-          <th>Room</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="studentsTableBody"></tbody>
-    </table>
-
-    <h3 class="section-title">Room Management</h3>
-    <form id="roomForm">
-      <div class="form-grid">
-        <input id="roomNumber" placeholder="Room Number">
-        <input id="roomCapacity" type="number" min="1" placeholder="Capacity">
-      </div>
-      <button type="submit" class="add-btn">Add Room</button>
-    </form>
-
-    <p id="roomStatus"></p>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Room Number</th>
-          <th>Capacity</th>
-          <th>Occupied</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="roomsTableBody"></tbody>
-    </table>
   </div>
 
   <script src="script.js"></script>

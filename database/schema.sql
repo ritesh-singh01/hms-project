@@ -44,5 +44,20 @@ CREATE TABLE complaints (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE notices (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE mess_menu (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    day VARCHAR(20) UNIQUE NOT NULL,
+    breakfast VARCHAR(255) NOT NULL,
+    lunch VARCHAR(255) NOT NULL,
+    dinner VARCHAR(255) NOT NULL
+);
+
 -- Seed Data
 INSERT INTO roles (name) VALUES ('SuperAdmin'), ('Warden'), ('Security'), ('Student');

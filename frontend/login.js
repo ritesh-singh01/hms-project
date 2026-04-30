@@ -35,8 +35,13 @@ document.addEventListener("DOMContentLoaded", () => {
         // Save token
         localStorage.setItem("token", data.token);
 
-        // Redirect
-        window.location.href = "dashboard.html";
+        if (Number(data.role_id) === 1) {
+          window.location.href = "dashboard.html";
+        } else if (Number(data.role_id) === 2) {
+          window.location.href = "student.html";
+        } else {
+          errorEl.innerText = "Unsupported role";
+        }
       } else {
         errorEl.innerText = data.message || "Login failed";
       }
