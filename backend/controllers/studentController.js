@@ -68,9 +68,12 @@ exports.getAllStudents = async (req, res) => {
         u.email,
         sd.roll_no,
         sd.department,
-        sd.year
+        sd.year,
+        sd.room_id,
+        r.room_number
       FROM users u
-      INNER JOIN student_details sd ON sd.user_id = u.id`
+      INNER JOIN student_details sd ON sd.user_id = u.id
+      LEFT JOIN rooms r ON r.id = sd.room_id`
     );
 
     return res.json(students);

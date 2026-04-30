@@ -14,13 +14,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const submitBtn = document.getElementById('submitBtn');
   const passwordInput = document.getElementById('password');
   const logoutBtn = document.getElementById('logoutBtn');
+  const roomStatusEl = document.getElementById('roomStatus');
+  const roomForm = document.getElementById('roomForm');
+  const roomsTableBody = document.getElementById('roomsTableBody');
 
-  if (!statusEl || !studentsTableBody || !studentForm || !formTitle || !submitBtn || !passwordInput || !logoutBtn) {
+  if (
+    !statusEl || !studentsTableBody || !studentForm || !formTitle || !submitBtn || !passwordInput || !logoutBtn ||
+    !roomStatusEl || !roomForm || !roomsTableBody
+  ) {
     return;
   }
 
   function showMessage(message) {
     statusEl.innerText = message || '';
+  }
+
+  function showRoomMessage(message) {
+    roomStatusEl.innerText = message || '';
   }
 
   function logout() {
@@ -92,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>${student.roll_no || ''}</td>
           <td>${student.department || ''}</td>
           <td>${student.year || ''}</td>
+          <td>${student.room_number || '-'}</td>
           <td></td>
         `;
 
@@ -186,6 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
       showMessage(data.message || (editStudentId ? 'Student updated successfully' : 'Student added successfully'));
       resetFormMode();
       await loadStudents();
+      await loadRooms();
     } catch (err) {
       console.error(err);
       showMessage('Server error');
@@ -218,9 +230,191 @@ document.addEventListener('DOMContentLoaded', () => {
 
       showMessage(data.message || 'Student deleted successfully');
       await loadStudents();
+      await loadRooms();
     } catch (err) {
       console.error(err);
       showMessage('Server error while deleting');
+    }
+  }
+
+  async function loadRooms() {
+    try {
+      showRoomMessage('Loading rooms...');
+      const response = await fetch('http://localhost:5000/api/rooms', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (response.status === 401) {
+        logout();
+        return;
+      }
+
+      if (!response.ok) {
+        showRoomMessage(data.message || 'Failed to load rooms');
+        return;
+      }
+
+      if (!Array.isArray(data) || data.length === 0) {
+        showRoomMessage('No rooms found');
+        roomsTableBody.innerHTML = '';
+        return;
+      }
+
+      showRoomMessage('');
+      roomsTableBody.innerHTML = '';
+
+      data.forEach((room) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${room.id}</td>
+          <td>${room.room_number}</td>
+          <td>${room.capacity}</td>
+          <td>${room.occupied}</td>
+          <td></td>
+        `;
+
+        const actionCell = row.querySelector('td:last-child');
+
+        const assignBtn = document.createElement('button');
+        assignBtn.type = 'button';
+        assignBtn.className = 'edit-btn';
+        assignBtn.innerText = 'Assign Student';
+        assignBtn.addEventListener('click', () => assignRoom(room.id));
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.innerText = 'Delete';
+        deleteBtn.addEventListener('click', () => deleteRoom(room.id));
+
+        actionCell.appendChild(assignBtn);
+        actionCell.appendChild(deleteBtn);
+        roomsTableBody.appendChild(row);
+      });
+    } catch (err) {
+      console.error(err);
+      showRoomMessage('Server error while loading rooms');
+    }
+  }
+
+  async function createRoom() {
+    const roomNumberInput = document.getElementById('roomNumber');
+    const roomCapacityInput = document.getElementById('roomCapacity');
+    const room_number = roomNumberInput.value.trim();
+    const capacity = Number(roomCapacityInput.value);
+
+    if (!room_number || !capacity) {
+      showRoomMessage('Room number and capacity are required');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/rooms', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ room_number, capacity })
+      });
+
+      const data = await response.json();
+
+      if (response.status === 401) {
+        logout();
+        return;
+      }
+
+      if (!response.ok) {
+        showRoomMessage(data.message || 'Failed to add room');
+        return;
+      }
+
+      showRoomMessage(data.message || 'Room added successfully');
+      roomForm.reset();
+      await loadRooms();
+    } catch (err) {
+      console.error(err);
+      showRoomMessage('Server error while adding room');
+    }
+  }
+
+  async function deleteRoom(roomId) {
+    if (!window.confirm('Are you sure you want to delete this room?')) return;
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/rooms/${roomId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+
+      if (response.status === 401) {
+        logout();
+        return;
+      }
+
+      if (!response.ok) {
+        showRoomMessage(data.message || 'Failed to delete room');
+        return;
+      }
+
+      showRoomMessage(data.message || 'Room deleted successfully');
+      await loadRooms();
+    } catch (err) {
+      console.error(err);
+      showRoomMessage('Server error while deleting room');
+    }
+  }
+
+  async function assignRoom(roomId) {
+    const studentInput = window.prompt('Enter Student ID to assign this room:');
+    if (!studentInput) return;
+
+    const studentId = Number(studentInput);
+    if (!Number.isInteger(studentId) || studentId <= 0) {
+      showRoomMessage('Invalid student ID');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/rooms/assign', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          student_id: studentId,
+          room_id: roomId
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.status === 401) {
+        logout();
+        return;
+      }
+
+      if (!response.ok) {
+        showRoomMessage(data.message || 'Failed to assign room');
+        return;
+      }
+
+      showRoomMessage(data.message || 'Room assigned successfully');
+      await loadRooms();
+      await loadStudents();
+    } catch (err) {
+      console.error(err);
+      showRoomMessage('Server error while assigning room');
     }
   }
 
@@ -229,6 +423,12 @@ document.addEventListener('DOMContentLoaded', () => {
     await saveStudent();
   });
 
+  roomForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    await createRoom();
+  });
+
   logoutBtn.addEventListener('click', logout);
   loadStudents();
+  loadRooms();
 });

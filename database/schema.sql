@@ -20,6 +20,7 @@ CREATE TABLE student_details (
     roll_no VARCHAR(50),
     department VARCHAR(100),
     year INT,
+    room_id INT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
@@ -27,8 +28,12 @@ CREATE TABLE rooms (
     id INT AUTO_INCREMENT PRIMARY KEY,
     room_number VARCHAR(20),
     capacity INT,
-    current_occupancy INT DEFAULT 0
+    occupied INT DEFAULT 0
 );
+
+ALTER TABLE student_details
+ADD CONSTRAINT fk_student_room
+FOREIGN KEY (room_id) REFERENCES rooms(id);
 
 CREATE TABLE complaints (
     id INT AUTO_INCREMENT PRIMARY KEY,

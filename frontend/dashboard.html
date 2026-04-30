@@ -36,10 +36,34 @@
           <th>Roll No</th>
           <th>Department</th>
           <th>Year</th>
+          <th>Room</th>
           <th>Action</th>
         </tr>
       </thead>
       <tbody id="studentsTableBody"></tbody>
+    </table>
+
+    <h3 class="section-title">Room Management</h3>
+    <form id="roomForm">
+      <div class="form-grid">
+        <input id="roomNumber" placeholder="Room Number">
+        <input id="roomCapacity" type="number" min="1" placeholder="Capacity">
+      </div>
+      <button type="submit" class="add-btn">Add Room</button>
+    </form>
+
+    <p id="roomStatus"></p>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Room Number</th>
+          <th>Capacity</th>
+          <th>Occupied</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="roomsTableBody"></tbody>
     </table>
   </div>
 
