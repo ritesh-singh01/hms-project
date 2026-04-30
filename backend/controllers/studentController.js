@@ -4,6 +4,10 @@ const db = require('../config/db');
 exports.addStudent = async (req, res) => {
   const { name, email, password, roll_no, department, year } = req.body;
 
+  if (Number(req.user.role) !== 1) {
+    return res.status(403).json({ message: 'Only admin can add students' });
+  }
+
   if (!name || !email || !password || !roll_no || !department || !year) {
     return res.status(400).json({ message: 'All fields are required' });
   }
@@ -47,7 +51,7 @@ exports.addStudent = async (req, res) => {
     if (conn) {
       await conn.rollback();
     }
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({ message: err.message || 'Server error while adding student' });
   } finally {
     if (conn) {
       conn.release();
@@ -71,7 +75,7 @@ exports.getAllStudents = async (req, res) => {
 
     return res.json(students);
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({ message: err.message || 'Server error while fetching students' });
   }
 };
 
@@ -106,7 +110,7 @@ exports.deleteStudent = async (req, res) => {
 
   } catch (err) {
     if (conn) await conn.rollback();
-    console.error(err);   // 🔥 IMPORTANT
+    console.error(err);
     res.status(500).json({ message: "Server error while deleting student" });
   } finally {
     if (conn) conn.release();
@@ -150,8 +154,8 @@ exports.updateStudent = async (req, res) => {
     return res.json({ message: 'Student updated successfully' });
   } catch (err) {
     if (conn) await conn.rollback();
-    return res.status(500).json({ error: err.message });
     console.error("UPDATE ERROR:", err);
+    return res.status(500).json({ message: err.message || 'Server error while updating student' });
   } finally {
     if (conn) conn.release();
   }
