@@ -282,3 +282,4 @@ frontend/login.html
 ## 📄 License
 
 This project is for educational purposes.
+---
