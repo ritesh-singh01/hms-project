@@ -276,6 +276,7 @@ frontend/login.html
 ## 👨‍💻 Author
 
 **Ritesh Singh**
+---
 
 ---
 
