@@ -1,27 +1,28 @@
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("loginForm");
-
-  // If form not found → stop (prevents errors)
   if (!loginForm) return;
 
-  loginForm.addEventListener("submit", async function (e) {
+  // 🔴 IMPORTANT: change this to your Render backend URL
+  const API_BASE = "https://hms-project-backend.onrender.com";
+
+  loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
+    const email = document.getElementById("email")?.value.trim();
+    const password = document.getElementById("password")?.value.trim();
     const errorEl = document.getElementById("error");
 
-    // Clear old error
-    errorEl.innerText = "";
+    // Reset error
+    if (errorEl) errorEl.textContent = "";
 
-    // Basic validation
+    // Validation
     if (!email || !password) {
-      errorEl.innerText = "All fields are required";
+      if (errorEl) errorEl.textContent = "All fields are required";
       return;
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(`${API_BASE}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -29,25 +30,33 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ email, password })
       });
 
-      const data = await res.json();
+      const data = await response.json();
 
-      if (res.ok) {
-        // Save token
-        localStorage.setItem("token", data.token);
-
-        if (Number(data.role_id) === 1) {
-          window.location.href = "dashboard.html";
-        } else if (Number(data.role_id) === 2) {
-          window.location.href = "student.html";
-        } else {
-          errorEl.innerText = "Unsupported role";
-        }
-      } else {
-        errorEl.innerText = data.message || "Login failed";
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
       }
 
-    } catch (err) {
-      errorEl.innerText = "Server error";
+      // Save token
+      localStorage.setItem("token", data.token);
+
+      // Redirect based on role
+      const role = Number(data.role_id);
+
+      if (role === 1) {
+        window.location.href = "dashboard.html";   // Admin
+      } else if (role === 2) {
+        window.location.href = "student.html";     // Student
+      } else {
+        throw new Error("Invalid user role");
+      }
+
+    } catch (error) {
+      if (errorEl) {
+        errorEl.textContent =
+          error.message === "Failed to fetch"
+            ? "Cannot connect to server"
+            : error.message;
+      }
     }
   });
 });
