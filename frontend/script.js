@@ -1,3 +1,4 @@
+const API_BASE = "https://hms-project-backend.onrender.com"; // change if neede
 document.addEventListener('DOMContentLoaded', () => {
   let editStudentId = null;
   let studentsData = [];
@@ -333,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadStudents() {
     try {
       showMessage('Loading students...');
-      const response = await fetch('http://localhost:5000/api/students', {
+      const response = await fetch('${API_BASE}/api/students', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`
@@ -391,10 +392,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      let url = 'http://localhost:5000/api/students';
+      let url = '${API_BASE}/api/students';
       let method = 'POST';
       if (editStudentId) {
-        url = `http://localhost:5000/api/students/${editStudentId}`;
+        url = `${API_BASE}/api/students/${editStudentId}`;
         method = 'PUT';
       }
 
@@ -440,7 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/students/${id}`, {
+      const response = await fetch(`${API_BASE}/api/students/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`
@@ -470,7 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadRooms() {
     try {
       showRoomMessage('Loading rooms...');
-      const response = await fetch('http://localhost:5000/api/rooms', {
+      const response = await fetch('${API_BASE}/api/rooms', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`
@@ -510,7 +511,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/rooms', {
+      const response = await fetch('${API_BASE}/api/rooms', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -543,7 +544,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!window.confirm('Are you sure you want to delete this room?')) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/rooms/${roomId}`, {
+      const response = await fetch(`${API_BASE}/api/rooms/${roomId}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`
@@ -589,7 +590,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/rooms/assign', {
+      const response = await fetch('${API_BASE}/api/rooms/assign', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -623,7 +624,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function removeStudentRoom(studentId) {
     try {
-      const response = await fetch('http://localhost:5000/api/rooms/remove-assignment', {
+      const response = await fetch('${API_BASE}/api/rooms/remove-assignment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -653,7 +654,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadNotices() {
     try {
       showNoticeMessage('Loading notices...');
-      const response = await fetch('http://localhost:5000/api/notices', {
+      const response = await fetch('${API_BASE}/api/notices', {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await response.json();
@@ -681,7 +682,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/notices', {
+      const response = await fetch('${API_BASE}/api/notices', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -711,7 +712,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function deleteNotice(noticeId) {
     if (!window.confirm('Delete this notice?')) return;
     try {
-      const response = await fetch(`http://localhost:5000/api/notices/${noticeId}`, {
+      const response = await fetch(`${API_BASE}/api/notices/${noticeId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -734,7 +735,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadMessTimetable() {
     try {
       showMessMessage('Loading timetable...');
-      const response = await fetch('http://localhost:5000/api/mess', {
+      const response = await fetch('${API_BASE}/api/mess', {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await response.json();
@@ -764,7 +765,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/mess', {
+      const response = await fetch('${API_BASE}/api/mess', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
