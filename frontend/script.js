@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const userPayload = parseToken(token);
   if (!userPayload) {
-    window.location.href = 'login.html';
+    window.location.href = 'index.html';
     return;
   }
   if (Number(userPayload.role) !== 1) {
@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function logout() {
     localStorage.removeItem('token');
-    window.location.href = 'login.html';
+    window.location.href = 'index.html';
   }
 
   function resetFormMode() {
