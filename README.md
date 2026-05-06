@@ -277,7 +277,7 @@ frontend/login.html
 
 **Ritesh Singh**
 ---
----
+
 ---
 
 ## 📄 License
